@@ -62,7 +62,9 @@ export default function(props) {
 
         await doFetch('http://localhost:4000/verify', options);
       })();
-    }
+    } else if(jwt == "^vAr^") {
+			dispatch({ type: 'SET_UNAUTHORIZED'});
+		}
   }, [jwt]);
 
   useEffect(() => {
@@ -79,6 +81,15 @@ export default function(props) {
 					history.push(`/profiles/${parsedJwt['user'].alias}`);
 					break;
 
+				default:
+					break;
+			}
+		}
+    if(fetching === false && error !== null && typeof error.response !== 'undefined' && error.hasOwnProperty('response') && ("Code" in error.response.data)) {
+			switch(error.response.data['Code']) {
+				case 602:
+					setJwt('^vAr^');
+					break;
 				default:
 					break;
 			}
