@@ -1,8 +1,10 @@
 // components
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { Link, NavLink } from 'react-router-dom';
+
+import { AppContext } from './AppProvider.js';
 
 const StyledNav = styled.div`
   position: relative;
@@ -52,8 +54,10 @@ const StyledNav = styled.div`
 `;
 
 export function Nav() {
+  const { user, setJwt } = useContext(AppContext);
+
   const handleLogout = () => {
-    // console.log(params)
+    setJwt('^vAr^')
   }
 
   return (
@@ -66,9 +70,16 @@ export function Nav() {
             <Link to="/">Nodemy</Link>
             <div className="flex-row-filler"></div>
             <NavLink to="/">Home</NavLink>
-            <NavLink to="/" onClick={ handleLogout }>Logout</NavLink>
-            <NavLink to="/login">Login</NavLink>
-            <NavLink to="/register">Register</NavLink>
+            { user.isLoggedIn === true &&
+              <NavLink to="/" onClick={ handleLogout }>Logout</NavLink>
+            }
+
+            { user.isLoggedIn === false &&
+              <>
+                <NavLink to="/login">Login</NavLink>
+                <NavLink to="/register">Register</NavLink>
+              </>
+            }
         </div>
     </StyledNav>
   );

@@ -11,13 +11,12 @@ import { useFetch } from './Hooks/useFetch.js';
 
 export default function(props) {
   let history = useHistory();
+
   const [ user, dispatch ] = useContext(UserContext);
-
   const [ jwt, setJwt ] = useLocalStorage('access_token', '^vAr^');
-  const [ verifiedJwt, setVerifiedJwt ] = useState(null);
-
   const [{ fetching, response, error }, doFetch] = useFetch();
 
+  const [ verifiedJwt, setVerifiedJwt ] = useState(null);
   const [display, setDisplay] = useState({
     state: false
   });
