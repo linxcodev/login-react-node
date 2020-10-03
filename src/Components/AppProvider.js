@@ -6,11 +6,15 @@ import axios from 'axios';
 export const AppContext = createContext();
 import { UserContext } from './UserProvider.js';
 import useLocalStorage from './Hooks/useLocalStorage.js';
+import { useFetch } from './Hooks/useFetch.js';
 
 export default function(props) {
   const [ user, dispatch ] = useContext(UserContext);
 
   const [ jwt, setJwt ] = useLocalStorage('access_token', '^vAr^');
+  const [ verifiedJwt, setVerifiedJwt ] = useState(null);
+
+  const [{ fetching, response, error }, doFetch] = useFetch();
 
   const [display, setDisplay] = useState({
     state: false
@@ -44,6 +48,21 @@ export default function(props) {
     }
   }
 
+  useEffect(() => {
+    if (jwt !== '^vAr^' && verifiedJwt === null) {
+      (async function anon() {
+        const options = {
+          method: 'get',
+          headers: {
+            authorization: `Bearer ${jwt}`,
+          }
+        }
+
+        await doFetch('http://localhost:4000/verify', options);
+      })();
+    }
+  }, [jwt])
+
   const handleKeyEvent = (event) => {
     if (event.type == "keyup") {
       switch (event.key) {
@@ -75,7 +94,7 @@ export default function(props) {
 
   return (
     <AppContext.Provider value={{
-      display, setDisplay, user, dispatch, setJwt,
+      display, setDisplay, user, dispatch, setJwt, jwt
     }}> {props.children}
     </AppContext.Provider>
   );

@@ -9,7 +9,7 @@ const MongoClient = require('mongodb').MongoClient;
 //Our Packages
 const utils = require('./utilz.js');
 
-MongoClient.connect("mongodb://localhost:27017/api", { useUnifiedTopology: true, useNewUrlParser: true }, ConfigureAPI);
+MongoClient.connect(utils.system_configuration['system']['databases']['mongo']['url'], { useUnifiedTopology: true, useNewUrlParser: true }, ConfigureAPI);
 
 /* Internal Configuration */
 let api = null;

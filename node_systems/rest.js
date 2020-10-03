@@ -48,7 +48,25 @@ http.createServer(app).listen(4000, () => {
 			let token = await utils.GenerateJwt(user);
 			res.status(200).send({ access_token: token, user, Code: 701 });
 		} else {
-			res.status(401).send({ Error: ['Failed Authentication'], Code: 601 })
+			res.status(401).send({ Error: ['Failed Authentication'], Code: 601 });
 		}
 	});
+
+  app.get('/verify', async(req, res) => {
+    let auth = req.header('authorization').split('Bearer ');
+    let verified = await utils.VerfifyJwt(auth[1]);
+
+    switch (verified) {
+      case true:
+        console.log('Valid JWT');
+        res.status(200).send({ success_message: ['Valid Stored JWT'], code: 702 });
+        break;
+      case false:
+        console.log('Crappy JWT');
+        res.status(401).send({ success_message: ['JWT Verification failed'], Code: 602 });
+        break;
+      default:
+        break;
+    }
+  })
 })
