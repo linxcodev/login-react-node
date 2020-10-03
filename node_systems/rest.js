@@ -59,7 +59,7 @@ http.createServer(app).listen(4000, () => {
     switch (verified) {
       case true:
         console.log('Valid JWT');
-        res.status(200).send({ success_message: ['Valid Stored JWT'], code: 702 });
+        res.status(200).send({ success_message: ['Valid Stored JWT'], Code: 702 });
         break;
       case false:
         console.log('Crappy JWT');

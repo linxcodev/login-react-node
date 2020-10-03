@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, createContext, useContext } from 'react';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
 export const AppContext = createContext();
 import { UserContext } from './UserProvider.js';
@@ -9,6 +10,7 @@ import useLocalStorage from './Hooks/useLocalStorage.js';
 import { useFetch } from './Hooks/useFetch.js';
 
 export default function(props) {
+  let history = useHistory();
   const [ user, dispatch ] = useContext(UserContext);
 
   const [ jwt, setJwt ] = useLocalStorage('access_token', '^vAr^');
@@ -61,7 +63,27 @@ export default function(props) {
         await doFetch('http://localhost:4000/verify', options);
       })();
     }
-  }, [jwt])
+  }, [jwt]);
+
+  useEffect(() => {
+    if(fetching === false && response !== null && ("Code" in response)) {
+			switch(response['Code']) {
+				case 702:
+					let base64Jwt = jwt.split('.')[1];
+					let decodedJwt = atob(base64Jwt);
+					let parsedJwt = JSON.parse(decodedJwt);
+
+					if(user['user'] === null) {
+						dispatch({ type: 'SET_AUTHORIZED', payload: parsedJwt['user'] })
+					}
+					history.push(`/profiles/${parsedJwt['user'].alias}`);
+					break;
+
+				default:
+					break;
+			}
+		}
+  }, [fetching, error, response]);
 
   const handleKeyEvent = (event) => {
     if (event.type == "keyup") {
