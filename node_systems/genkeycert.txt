@@ -1,0 +1,5 @@
+- mkdir keycertz
+- openssl genrsa -des3 -out mykey.pem 2048
+- openssl rsa -in mykey.pem -pubout > mykey.pub
+
+mongoimport --jsonArray --db api --collection articles --file fake_articles.json --authenticationDatabase admin --username mongod --password SOMEHARDPASSWORD
