@@ -118,6 +118,12 @@ const StyledAuthentication = styled.div`
 			}
 		}
 	}
+
+  & #auth-messages {
+		padding: .5rem;
+		width: 100%;
+		color: #a0371d;
+	}
 `;
 
 import { Button } from '../Button.js';
@@ -188,6 +194,13 @@ export function Authentication({ location }) {
 							<Button btype="generic" text="LOGIN" onClick={(e) => handleLogin()} margin=".5rem 0 .5rem 0"/>
 						</div>
           </div>
+          { error !== null &&
+						<ul id="auth-messages">
+							{ (error.hasOwnProperty('response')  && error.response.data['Error'].length > 0) && error.response.data['Error'].map((e, i) => (
+								<li key={i}>{ e }</li>
+							))}
+						</ul>
+					}
         </div>
       }
 

@@ -70,10 +70,10 @@ export function Nav() {
             <Link to="/">Nodemy</Link>
             <div className="flex-row-filler"></div>
             <NavLink to="/">Home</NavLink>
+
             { user.isLoggedIn === true &&
               <NavLink to="/" onClick={ handleLogout }>Logout</NavLink>
             }
-
             { user.isLoggedIn === false &&
               <>
                 <NavLink to="/login">Login</NavLink>
