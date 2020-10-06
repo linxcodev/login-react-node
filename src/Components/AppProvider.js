@@ -49,6 +49,9 @@ export default function(props) {
     }
   }
 
+  // site spesific data
+  const [ authors, setAuthors ] = useState({});
+
   useEffect(() => {
     if (jwt !== '^vAr^' && verifiedJwt === null) {
       (async function anon() {
@@ -126,7 +129,16 @@ export default function(props) {
 
   return (
     <AppContext.Provider value={{
-      display, setDisplay, user, dispatch, setJwt, jwt
+      display,
+      setDisplay,
+      user,
+      dispatch,
+
+      setJwt, 
+      jwt,
+
+      authors,
+      setAuthors,
     }}> {props.children}
     </AppContext.Provider>
   );

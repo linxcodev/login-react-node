@@ -68,5 +68,10 @@ http.createServer(app).listen(4000, () => {
       default:
         break;
     }
-  })
+  });
+
+  app.post('/articles', async (req,res) => { // {} = empty match
+		let articles = await mongo.GetPaginatedDocuments(req.body.payload.col, null, {}, req.body.payload.sort, req.body.payload.skip, req.body.payload.limit );
+		res.status(200).send({ articles, Code: 703 });
+	});
 })

@@ -54,6 +54,30 @@ async function AuthenticationUser(upObj) {
  	}
 }
 
+async function GetPaginatedDocuments(collection, project, match, sort, skip, limit) {
+	let count = await api.collection(collection).find(match).count();
+	let aggAry = [
+		{ '$match': match },
+		{ '$sort': sort },
+		{ '$skip': parseInt(skip) },
+		{ '$limit': parseInt(limit) },
+	];
+	( project !== null ) ? aggAry.push(project) : '';
+
+	let cursor = await api.collection(collection).aggregate(aggAry);
+
+	let docs = [];
+	while(await cursor.hasNext()) {
+		const doc = await cursor.next();
+		docs.push(doc);
+	}
+
+	docs = { count: parseInt(count), [`${collection}`]: docs }
+
+	return docs
+}
+
 module.exports = {
-	AuthenticationUser
+	AuthenticationUser,
+	GetPaginatedDocuments
 };
