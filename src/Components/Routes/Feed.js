@@ -9,41 +9,71 @@ import { useFetch } from '../Hooks/useFetch.js';
 
 const StyledFeed = styled.div`
 #feed-articles-wrapper {
-		font-size: 1.5rem;
+	font-size: 1.5rem;
 
-		#feed-articles-title-bar {
-			height: 5rem;
-			border: 1px solid #2d2c3c;
-			padding: 1rem 2rem 1rem 2rem;
+	#feed-articles-title-bar {
+		height: 5rem;
+		border: 1px solid #2d2c3c;
+		padding: 1rem 2rem 1rem 2rem;
+		display: flex;
+		flex-direction: row;
+
+		color: #5d858d;
+		align-items: center;
+
+		#feed-articles-showing {
+			margin-right: .5rem;
+		}
+
+		#feed-articles-prev,
+		#feed-articles-next {
+			width: 3rem;
+			height: 3rem;
+			border: 1px solid #2d3c41;
 			display: flex;
-			flex-direction: row;
-
-			color: #5d858d;
+			flex-direction: column;
 			align-items: center;
+			justify-content: center;
 
-			#feed-articles-showing {
-				margin-right: .5rem;
+			svg {
+				width: 1rem;
 			}
-			
-			#feed-articles-prev,
-			#feed-articles-next {
-				width: 3rem;
-				height: 3rem;
+
+			&:hover {
+				cursor: pointer;
+			}
+		}
+  }
+}
+
+#feed-articles-content {
+	display: grid;
+	grid-template-columns: 32rem 1fr;
+	height: calc(100vh - 20rem);
+
+	#feed-articles-left {
+		border-right: 1px solid #2d2c3c;
+
+		#feed-articles-left-tags {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+			grid-gap: .2rem;
+			justify-content: space-between;
+
+			span {
+				display: block;
 				border: 1px solid #2d3c41;
+				padding: .2rem;
+				width: auto;
 				display: flex;
-				flex-direction: column;
+				flex-direction: row;
 				align-items: center;
 				justify-content: center;
-
-				svg {
-					width: 1rem;
-				}
-
-				&:hover {
-					cursor: pointer;
-				}
+				color: #3891a0;
+				text-transform: uppercase;
 			}
-    }
+		}
+	}
 }
 `;
 
@@ -90,8 +120,13 @@ export function Feed() {
 
 					currentArticles.forEach(async (a, index) => {
 						if (!currentAuthors.includes(a['authorObjId']) && !newAuthors.includes(a['authorObjId'])) { newAuthors.push(a['authorObjId']) }
+
+						a.tags.forEach(async (tag) => {
+							!newTags.includes(tag) ? newTags.push(tag) : '';
+						});
 					});
 
+					setTags(newTags);
 					break;
 				default:
 					break;
@@ -115,8 +150,15 @@ export function Feed() {
 					</div>
 				</div>
 				<div id="feed-articles-content">
-					<div id="feed-articles-left">
+				<div id="feed-articles-left">
+					<div id="feed-articles-left-tags">
+						{ tags.length > 0 && tags.map((tag,i) => (
+							<Link to={ `/tag/${tag}`} key={i}>
+								<span>{ tag }</span>
+							</Link>
+						))}
 					</div>
+				</div>
 					<div id="feed-articles-right">
 
 					</div>
