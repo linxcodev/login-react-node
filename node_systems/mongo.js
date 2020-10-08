@@ -105,9 +105,15 @@ async function UpdateDocument(type, oid, d) {
 	}
 }
 
+async function InsertDocument(collection, payload) {
+	let result = await api.collection(collection).insertOne(payload);
+	return result;
+}
+
 module.exports = {
 	GetAuthors,
 	UpdateDocument,
+	InsertDocument,
 	AuthenticationUser,
 	GetPaginatedDocuments
 };

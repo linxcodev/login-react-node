@@ -88,4 +88,9 @@ http.createServer(app).listen(4000, () => {
 	app.get('/articles/:oid/unlike/:uid', async(req,res) => {
 		/* IMPLEMENT */
 	});
-})
+
+  app.post('/articles/post/new', async (req,res) => {
+		let result = await mongo.InsertDocument('articles', req.body.payload);
+		res.status(200).send({  Code: 708 });
+	});
+});
