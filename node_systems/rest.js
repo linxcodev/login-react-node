@@ -79,4 +79,13 @@ http.createServer(app).listen(4000, () => {
 		let authors = await mongo.GetAuthors(req.body.payload.newAuthors);
 		res.status(200).send({ authors, Code: 704 });
 	});
+
+  app.get('/articles/:oid/like/:uid', async(req,res) => {
+		let result = await mongo.UpdateDocument('like-article', req.params.oid, {"$addToSet": { 'likes': { uid: req.params.uid, 'ts': Date.now() }}});
+		if(result['modifiedCount'] === 1) { res.status(200).send({  Code: 706 }); }
+	});
+
+	app.get('/articles/:oid/unlike/:uid', async(req,res) => {
+		/* IMPLEMENT */
+	});
 })

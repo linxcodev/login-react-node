@@ -94,8 +94,20 @@ async function GetAuthors(authors) {
 	return docs;
 }
 
+async function UpdateDocument(type, oid, d) {
+	switch(type) {
+		case 'like-article':
+			let result = await api.collection('articles').updateOne({'_id': ObjectId(oid)}, d);
+			return result;
+			break;
+		default:
+			break;
+	}
+}
+
 module.exports = {
 	GetAuthors,
+	UpdateDocument,
 	AuthenticationUser,
 	GetPaginatedDocuments
 };
