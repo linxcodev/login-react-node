@@ -74,4 +74,9 @@ http.createServer(app).listen(4000, () => {
 		let articles = await mongo.GetPaginatedDocuments(req.body.payload.col, null, {}, req.body.payload.sort, req.body.payload.skip, req.body.payload.limit );
 		res.status(200).send({ articles, Code: 703 });
 	});
+
+  app.post('/authors', async (req,res) => {
+		let authors = await mongo.GetAuthors(req.body.payload.newAuthors);
+		res.status(200).send({ authors, Code: 704 });
+	});
 })

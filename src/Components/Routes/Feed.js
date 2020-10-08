@@ -9,7 +9,7 @@ import { useFetch } from '../Hooks/useFetch.js';
 
 const StyledFeed = styled.div`
 #feed-articles-wrapper {
-	font-size: 1.5rem;
+	font-size: 1.4rem;
 
 	#feed-articles-title-bar {
 		height: 5rem;
@@ -74,6 +74,77 @@ const StyledFeed = styled.div`
 			}
 		}
 	}
+
+	#feed-articles-right {
+		border-right: 1px solid #2d2c3c;
+		overflow-y: scroll;
+
+		::-webkit-scrollbar {
+			width: 0px;  /* Remove scrollbar space */
+			background: transparent;  /* Optional: just make scrollbar invisible */
+		}
+		/* Optional: show position indicator in red */
+		::-webkit-scrollbar-thumb {
+			background: #FF0000;
+		}
+
+		.feed-article-title {
+			height: 10rem;
+			padding: 2rem;
+			border-bottom: 1px solid #2d2d3c;
+			color: #f0f0f1;
+			font-size: 2rem;
+			text-transform: uppercase;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			text-decation: none;
+		}
+
+		.feed-article-info-bar {
+			height: 4rem;
+			display: flex;
+			flex-direction: row;
+			border-bottom: 1px solid #2d2c3c;
+			align-items: center;
+			padding: 0 2rem 0 2rem;
+			color: #4d6a74;
+
+			a {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				color: #56baca;
+				text-decoration: none;
+				text-transform: uppercase;
+
+				.feed-article-author-image {
+					width: 3rem;
+					height: 3rem;
+					margin-right: .5rem;
+					border: 1px solid #322339;
+				}
+
+			}
+
+			.feed-article-created-at {
+				margin-left: 1rem;
+				margin-right: 1rem;
+			}
+
+			& svg {
+				width: 2rem;
+
+				&:hover { cursor:pointer; }
+			}
+		}
+
+		.feed-article-description {
+			color: #5d858d;
+			padding: 2rem;
+			border-bottom: 1px solid #2d2c3c;
+		}
+	}
 }
 `;
 
@@ -124,9 +195,35 @@ export function Feed() {
 						a.tags.forEach(async (tag) => {
 							!newTags.includes(tag) ? newTags.push(tag) : '';
 						});
+
+						//Collect new authors information after tags have been updated
+						itemsProcessed++;
+						if(itemsProcessed === currentArticles.length) {
+							let options = {
+								method: 'post',
+								data: {
+									payload: {
+										newAuthors
+									}
+								}
+							}
+							await doFetch('http://localhost:4000/authors', options);
+						}
 					});
 
 					setTags(newTags);
+					break;
+				case 704:
+					let newAuthorsObj = {}
+					response['authors'].forEach((a) => {
+						newAuthorsObj[a['_id']] = a;
+
+						itemsProcessed++;
+						if(itemsProcessed === response['authors'].length) {
+							console.log('Done proccessing new authors.');
+							setAuthors({ ...authors, ...newAuthorsObj });
+						}
+					});
 					break;
 				default:
 					break;
@@ -150,17 +247,34 @@ export function Feed() {
 					</div>
 				</div>
 				<div id="feed-articles-content">
-				<div id="feed-articles-left">
-					<div id="feed-articles-left-tags">
-						{ tags.length > 0 && tags.map((tag,i) => (
-							<Link to={ `/tag/${tag}`} key={i}>
-								<span>{ tag }</span>
-							</Link>
-						))}
+					<div id="feed-articles-left">
+						<div id="feed-articles-left-tags">
+							{ tags.length > 0 && tags.map((tag,i) => (
+								<Link to={ `/tag/${tag}`} key={i}>
+									<span>{ tag }</span>
+								</Link>
+							))}
+						</div>
 					</div>
-				</div>
 					<div id="feed-articles-right">
-
+						{ articles.length > 0 && articles.map((a) => (
+							<div className="feed-article" key={uniqid()}>
+								<Link to={a.slug} className="feed-article-title">{ a.title }</Link>
+									<div className="feed-article-info-bar">
+										{ authors[a['authorObjId']] &&
+											<Link to={`/profiles/${authors[a['authorObjId']]['alias']}`}>
+												<img className="feed-article-author-image" src={ authors[a['authorObjId']]['profile']['url']} />
+												<div className="feed-article-author-fullname">{ authors[a['authorObjId']]['fullname'] }</div>
+											</Link>
+										}
+										<div className="feed-article-created-at"> { a.createdAt } </div>
+										<>
+											<svg onClick={(e) => LikeArticle(a._id)} aria-hidden="true" focusable="false" data-prefix="fal" data-icon="heart" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className="svg-inline--fa fa-heart fa-w-16 fa-2x"><path fill="currentColor" d="M462.3 62.7c-54.5-46.4-136-38.7-186.6 13.5L256 96.6l-19.7-20.3C195.5 34.1 113.2 8.7 49.7 62.7c-62.8 53.6-66.1 149.8-9.9 207.8l193.5 199.8c6.2 6.4 14.4 9.7 22.6 9.7 8.2 0 16.4-3.2 22.6-9.7L472 270.5c56.4-58 53.1-154.2-9.7-207.8zm-13.1 185.6L256.4 448.1 62.8 248.3c-38.4-39.6-46.4-115.1 7.7-161.2 54.8-46.8 119.2-12.9 142.8 11.5l42.7 44.1 42.7-44.1c23.2-24 88.2-58 142.8-11.5 54 46 46.1 121.5 7.7 161.2z"></path></svg>
+											<svg onClick={(e) => UnLikeArticle(a._id)} aria-hidden="true" focusable="false" data-prefix="fas" data-icon="heart" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className="svg-inline--fa fa-heart fa-w-16 fa-2x"><path fill="currentColor" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"></path></svg>
+										</>
+									</div>
+							</div>
+						))}
 					</div>
 				</div>
 			</div>

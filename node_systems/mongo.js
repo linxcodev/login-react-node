@@ -77,7 +77,25 @@ async function GetPaginatedDocuments(collection, project, match, sort, skip, lim
 	return docs
 }
 
+async function GetAuthors(authors) {
+	authors = authors.map(function(item) {
+		return ObjectId(item);
+	});
+
+	let cursor = await api.collection('users').find({"_id": { "$in": authors }});
+	let docs = [];
+	while(await cursor.hasNext()) {
+		const doc = await cursor.next();
+		delete doc.password;
+		docs.push(doc);
+	}
+	//console.log(docs);
+
+	return docs;
+}
+
 module.exports = {
+	GetAuthors,
 	AuthenticationUser,
 	GetPaginatedDocuments
 };
